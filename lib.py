@@ -26,8 +26,7 @@ def save_config(config:dict):
 def load_config():
     try:
         with open(configpath,'r',encoding='utf8') as f:
-            config = json.load(f)
-            return config
+            return json.load(f)
     except:
         return {}
 
@@ -57,10 +56,11 @@ def get_data(qid, name):
     soup = soup.find("div", {"name": "shindanResultBlock"})
     tags = soup.findAll("img")
     text = get_text(soup).replace("\n\n\n", "\n").replace('診断結果','診断結果\n')
-    imgs = set(tag["src"] for tag in tags)
-    img_list = []
-    for each in imgs:
-        img_list.append(each.replace("data:image/jpeg;base64,", "base64://"))
+    imgs = {tag["src"] for tag in tags}
+    img_list = [
+        each.replace("data:image/jpeg;base64,", "base64://") for each in imgs
+    ]
+
     return text, img_list
 
 
@@ -85,13 +85,7 @@ def get_hot(top_index=0, name=""):
 
 
 def process_text_list(text, name):
-    temp = ""
-    for each in text:
-        if each != name:
-            temp += each + "\n"
-        else:
-            temp += each
-    return temp
+    return "".join(each + "\n" if each != name else each for each in text)
 
 
 def get_text(tag: bs4.Tag) -> str:

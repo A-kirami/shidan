@@ -23,10 +23,12 @@ async def on_input_new(bot, ev, ):
         await bot.send(ev, '请后接想测的测试名！使用[看看测一测列表]命令查看当前启用的测试列表~')
         return
     if msg in qid_dict and msg != "热门测试":
-        arr = []
-        for i in ev.message:
-            if i["type"] == "at" and i["data"]["qq"] != "all":
-                arr.append(int(i["data"]["qq"]))
+        arr = [
+            int(i["data"]["qq"])
+            for i in ev.message
+            if i["type"] == "at" and i["data"]["qq"] != "all"
+        ]
+
         gid = ev.group_id
         for uid in arr:
             info = await bot.get_group_member_info(group_id=gid, user_id=uid, no_cache=True)
@@ -42,11 +44,13 @@ async def on_input_new(bot, ev, ):
             text_list += f"[CQ:image,file={each}]\n"
         await bot.send(ev, str(text_list))
     elif msg[:4] == "热门测试":
-        arr = []
         top_index = int(msg[4:]) if msg[4:] else 0
-        for i in ev.message:
-            if i["type"] == "at" and i["data"]["qq"] != "all":
-                arr.append(int(i["data"]["qq"]))
+        arr = [
+            int(i["data"]["qq"])
+            for i in ev.message
+            if i["type"] == "at" and i["data"]["qq"] != "all"
+        ]
+
         gid = ev.group_id
         for uid in arr:
             info = await bot.get_group_member_info(group_id=gid, user_id=uid, no_cache=True)
@@ -69,8 +73,8 @@ async def on_input_new(bot, ev, ):
 async def check_query_dict(bot, ev, ):
     msg='当前测一测关键词列表：\n'
     for qid in qid_dict:
-        msg=msg+f"{qid}：https://shindanmaker.com/{qid_dict[qid]}\n"
-    msg=msg+'热门测试：默认当前最高热度测试。后接相应id可指定任意测试~'
+        msg = f"{msg}{qid}：https://shindanmaker.com/{qid_dict[qid]}\n"
+    msg = f'{msg}热门测试：默认当前最高热度测试。后接相应id可指定任意测试~'
     try:
         await bot.send(ev, msg)
     except:
